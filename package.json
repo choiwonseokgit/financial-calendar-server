@@ -1,0 +1,31 @@
+{
+  "name": "financial-calendar-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch src src/app.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "@types/express": "^4.17.21",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "is-email": "^1.0.2",
+    "is-uuid": "^1.0.2",
+    "prisma": "^5.18.0",
+    "superstruct": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/is-email": "^1.0.0",
+    "@types/node": "^22.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "prisma": {
+    "seed": "ts-node src/seed.ts"
+  }
+}

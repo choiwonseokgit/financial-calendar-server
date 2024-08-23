@@ -1,0 +1,24 @@
+GET http://localhost:4000/users
+
+###
+
+POST http://localhost:4000/users
+Content-Type: application/json
+
+{
+    "email": "cs0328@hanmail.net",
+    "password": "0325",
+    "name": "최원석"
+}
+###
+
+PATCH http://localhost:4000/users/1
+Content-Type: application/json
+
+{
+   "password": "0325"
+}
+
+###
+
+DELETE http://localhost:4000/users/4
