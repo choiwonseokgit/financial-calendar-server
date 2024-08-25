@@ -2,8 +2,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import { PrismaClient, Prisma } from "@prisma/client";
-import { assert } from "superstruct";
-import { CreateUser, PatchUser } from "./struct";
 import cors from "cors";
 
 const prisma = new PrismaClient();
@@ -67,7 +65,7 @@ app.get(
 app.post(
   "/users",
   asyncHandler(async (req, res) => {
-    assert(req.body, CreateUser);
+    // assert(req.body, CreateUser);
 
     const user = await prisma.user.create({
       data: req.body,
@@ -80,7 +78,7 @@ app.post(
 app.patch(
   "/users/:id",
   asyncHandler(async (req, res) => {
-    assert(req.body, PatchUser);
+    // assert(req.body, PatchUser);
 
     const { id } = req.params;
     // 리퀘스트 바디 내용으로 id에 해당하는 유저 수정
