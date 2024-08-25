@@ -4,10 +4,16 @@ import express, { Request, Response, NextFunction } from "express";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { assert } from "superstruct";
 import { CreateUser, PatchUser } from "./struct";
+import cors from "cors";
 
 const prisma = new PrismaClient();
 
+const corsOptions = {
+  origin: ["http://localhost:3000"],
+};
+
 const app = express();
+app.use(cors(corsOptions));
 app.use(express.json());
 
 type Handler = (
