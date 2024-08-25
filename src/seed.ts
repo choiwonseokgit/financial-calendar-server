@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { USERS } from "./mock";
+import { SHCHEDULES, SPENDING_MONEYS, USERS } from "./mock";
 
 const prisma = new PrismaClient();
 
@@ -10,6 +10,16 @@ async function main() {
   // 목 데이터 삽입
   await prisma.user.createMany({
     data: USERS,
+    skipDuplicates: true,
+  });
+
+  await prisma.spendingMoney.createMany({
+    data: SPENDING_MONEYS,
+    skipDuplicates: true,
+  });
+
+  await prisma.schedule.createMany({
+    data: SHCHEDULES,
     skipDuplicates: true,
   });
 }

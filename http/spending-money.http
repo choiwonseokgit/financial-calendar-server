@@ -1,0 +1,26 @@
+GET http://localhost:4000/spending-moneys/1
+
+###
+GET http://localhost:4000/spending-moneys/1?month=09&year=2024
+
+###
+POST http://localhost:4000/spending-moneys
+Content-Type: application/json
+
+{
+    "spentMoney": "15000",
+    "category": "식사",
+    "date": "2024-09-26T15:37:58.469Z",
+    "userId": 1
+}
+
+###
+PATCH http://localhost:4000/spending-moneys/7
+Content-Type: application/json
+
+{
+   "category": "데이트"
+}
+
+###
+DELETE http://localhost:4000/spending-moneys/8

@@ -15,12 +15,14 @@ datasource db {
 
 model User {
   // id       String @id @default(uuid())
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password       String
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  spendingMoneys SpendingMoney[]
+  schedules      Schedule[]
 }
 
 model SpendingMoney {
@@ -28,6 +30,10 @@ model SpendingMoney {
   spentMoney String
   category   String
   date       DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
 }
 
 model Schedule {
@@ -38,4 +44,8 @@ model Schedule {
   isAllDay  Boolean
   startDate DateTime
   endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
 }
