@@ -15,17 +15,22 @@
     "@prisma/client": "^5.18.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "axios": "^1.7.5",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "is-email": "^1.0.2",
     "is-uuid": "^1.0.2",
+    "jsonwebtoken": "^9.0.2",
     "prisma": "^5.18.0",
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
     "@types/is-email": "^1.0.0",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"

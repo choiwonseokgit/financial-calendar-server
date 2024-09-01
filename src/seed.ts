@@ -6,12 +6,14 @@ const prisma = new PrismaClient();
 async function main() {
   // 기존 데이터 삭제
   await prisma.user.deleteMany();
+  // await prisma.spendingMoney.deleteMany();
+  // await prisma.schedule.deleteMany();
 
   // 목 데이터 삽입
-  await prisma.user.createMany({
-    data: USERS,
-    skipDuplicates: true,
-  });
+  // await prisma.user.createMany({
+  //   data: USERS,
+  //   skipDuplicates: true,
+  // });
 
   await prisma.spendingMoney.createMany({
     data: SPENDING_MONEYS,

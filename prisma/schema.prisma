@@ -15,14 +15,15 @@ datasource db {
 
 model User {
   // id       String @id @default(uuid())
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
-  password       String
-  name           String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  spendingMoneys SpendingMoney[]
-  schedules      Schedule[]
+  id                   Int                   @id @default(autoincrement())
+  nickname             String
+  profileImage         String?
+  kakaoId              String                @unique
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  spendingMoneys       SpendingMoney[]
+  schedules            Schedule[]
+  targetmonthSpendings TargetMonthSpending[]
 }
 
 model SpendingMoney {
@@ -30,6 +31,7 @@ model SpendingMoney {
   spentMoney String
   category   String
   date       DateTime
+  memo       String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -48,4 +50,14 @@ model Schedule {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
+}
+
+model TargetMonthSpending {
+  id          Int    @id @default(autoincrement())
+  targetDate  String
+  targetMoney String
+  User        User   @relation(fields: [userId], references: [id])
+  userId      Int
+
+  @@unique([userId, targetDate])
 }
