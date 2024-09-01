@@ -6,6 +6,7 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import { addHours } from "date-fns";
 
 const generateToken = (userId: number) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
@@ -33,6 +34,24 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const prisma = new PrismaClient();
+
+prisma.$use(async (params, next) => {
+  switch (params.action) {
+    case "findMany":
+    case "findRaw":
+    case "findUnique":
+    case "findUniqueOrThrow":
+    case "findFirst":
+    case "findFirstOrThrow":
+      // find 할 때 9시간 빼서 한국 표준시로 select
+      const createdAt = params.args.data.createdAt;
+      const newCreatedAt = addHours(createdAt, -9);
+      // const newCreatedAt = createdAt.setHours(createdAt.getHours() - 9);
+      params.args.data.createdAt = newCreatedAt;
+      break;
+  }
+  return next(params);
+});
 
 const corsOptions = {
   origin: ["http://localhost:3000"],
@@ -378,7 +397,14 @@ app.get(
       total += parseInt(spentMoney);
     });
 
-    res.send({ targetMonthSpending, targetDateSpendingMoney, total });
+    const formatTargetDateSpendingMoney = targetDateSpendingMoney.map(
+      (data) => ({
+        ...data,
+        date: addHours(data.date, 9),
+      })
+    );
+
+    res.send({ targetMonthSpending, formatTargetDateSpendingMoney, total });
   })
 );
 
@@ -390,6 +416,7 @@ app.post(
 
     const newData = {
       ...req.body,
+      date: addHours(req.body.date, 9),
       userId,
     };
 
@@ -408,9 +435,14 @@ app.patch(
     const { id } = req.body;
     // console.log(req.body);
 
+    const formatData = {
+      ...req.body,
+      date: addHours(req.body.date, 9),
+    };
+
     const product = await prisma.spendingMoney.update({
       where: { id: parseInt(id) },
-      data: req.body,
+      data: formatData,
     });
     res.send(product);
   })
