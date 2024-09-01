@@ -138,7 +138,7 @@ app.get(
 app.get(
   "/oauth/kakao/logout",
   asyncHandler(async (req, res) => {
-    console.log("소셜 로그인 로그아웃");
+    // console.log("소셜 로그인 로그아웃");
 
     res.clearCookie("accessToken", {
       httpOnly: true,
