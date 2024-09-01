@@ -19,8 +19,8 @@ model User {
   nickname             String
   profileImage         String?
   kakaoId              String                @unique
-  createdAt            DateTime              @default(dbgenerated("NOW()")) @db.Date
-  updatedAt            DateTime              @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Date
+  createdAt            DateTime              @default(dbgenerated("NOW()")) @db.Timestamp()
+  updatedAt            DateTime              @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Timestamp()
   spendingMoneys       SpendingMoney[]
   schedules            Schedule[]
   targetmonthSpendings TargetMonthSpending[]
@@ -32,8 +32,8 @@ model SpendingMoney {
   category   String
   date       DateTime
   memo       String?
-  createdAt  DateTime @default(dbgenerated("NOW()")) @db.Date
-  updatedAt  DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Date
+  createdAt  DateTime @default(dbgenerated("NOW()")) @db.Timestamp()
+  updatedAt  DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Timestamp()
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 }
@@ -56,8 +56,8 @@ model TargetMonthSpending {
   id          Int      @id @default(autoincrement())
   targetDate  String
   targetMoney String
-  createdAt   DateTime @default(dbgenerated("NOW()")) @db.Date
-  updatedAt   DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Date
+  createdAt   DateTime @default(dbgenerated("NOW()")) @db.Timestamp()
+  updatedAt   DateTime @default(dbgenerated("NOW() ON UPDATE NOW()")) @db.Timestamp()
   User        User     @relation(fields: [userId], references: [id])
   userId      Int
 
