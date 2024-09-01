@@ -7,6 +7,8 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
+const API_URL = process.env.PORT;
+
 const generateToken = (userId: number) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
     expiresIn: "7d",
@@ -89,7 +91,7 @@ app.get(
           grant_type: "authorization_code",
           client_id: process.env.KAKAO_LOGIN_CLIENT_ID,
           code,
-          redirect_uri: "http://localhost:4000/oauth/kakao",
+          redirect_uri: `${API_URL}/oauth/kakao`,
         },
       }
     );
