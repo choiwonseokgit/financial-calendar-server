@@ -37,15 +37,13 @@ const prisma = new PrismaClient();
 
 prisma.$use(async (params, next) => {
   switch (params.action) {
-    case "findUnique":
-    case "findUniqueOrThrow":
-    case "findFirst":
-    case "findFirstOrThrow":
+    case "findMany":
       // find 할 때 9시간 빼서 한국 표준시로 select
-      const createdAt = params.args.data.createdAt;
-      const newCreatedAt = addHours(createdAt, -9);
-      // const newCreatedAt = createdAt.setHours(createdAt.getHours() - 9);
-      params.args.data.createdAt = newCreatedAt;
+      const newFinds = params.args.data.map((el: any) => {
+        el.createdAt = addHours(el.createdAt, -9);
+      });
+
+      params.args.data = newFinds;
       break;
   }
   return next(params);
