@@ -6,7 +6,7 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { addHours } from "date-fns";
+import { addHours, subHours } from "date-fns";
 
 const generateToken = (userId: number) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
@@ -410,14 +410,14 @@ app.post(
   asyncHandler(async (req, res) => {
     const { userId } = req;
 
-    const newData = {
-      ...req.body,
-      date: addHours(req.body.date, 9),
-      userId,
-    };
+    // const newData = {
+    //   ...req.body,
+    //   date: subHours(req.body.date, 9),
+    //   userId,
+    // };
 
     const spendingMoney = await prisma.spendingMoney.create({
-      data: newData,
+      data: req.body,
     });
 
     res.status(201).send(spendingMoney);
