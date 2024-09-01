@@ -6,7 +6,7 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { addHours } from "date-fns";
+import { addHours, subHours } from "date-fns";
 
 const generateToken = (userId: number) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
@@ -36,21 +36,39 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 const prisma = new PrismaClient();
 
 prisma.$use(async (params, next) => {
-  switch (params.action) {
-    case "findMany":
-    case "findRaw":
-    case "findUnique":
-    case "findUniqueOrThrow":
-    case "findFirst":
-    case "findFirstOrThrow":
-      // find 할 때 9시간 빼서 한국 표준시로 select
-      const createdAt = params.args.data.createdAt;
-      const newCreatedAt = addHours(createdAt, -9);
-      // const newCreatedAt = createdAt.setHours(createdAt.getHours() - 9);
-      params.args.data.createdAt = newCreatedAt;
-      break;
+  // Pass through to the next middleware or Prisma client
+  const result = await next(params);
+
+  // Handle read actions where result needs adjustment
+  if (
+    [
+      "findMany",
+      "findUnique",
+      "findUniqueOrThrow",
+      "findFirst",
+      "findFirstOrThrow",
+    ].includes(params.action)
+  ) {
+    if (Array.isArray(result)) {
+      // Handle case where result is an array
+      result.forEach((item) => {
+        Object.keys(item).forEach((key) => {
+          if (item[key] instanceof Date) {
+            item[key] = subHours(item[key], 9);
+          }
+        });
+      });
+    } else if (result && result instanceof Object) {
+      // Handle case where result is a single object
+      Object.keys(result).forEach((key) => {
+        if (result[key] instanceof Date) {
+          result[key] = subHours(result[key], 9);
+        }
+      });
+    }
   }
-  return next(params);
+
+  return result;
 });
 
 const corsOptions = {
