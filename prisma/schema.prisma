@@ -32,8 +32,8 @@ model SpendingMoney {
   category   String
   date       DateTime
   memo       String?
-  createdAt  DateTime @default(dbgenerated("NOW()"))
-  updatedAt  DateTime @default(dbgenerated("NOW() ON UPDATE NOW()"))
+  createdAt  DateTime @default(now()) @db.Timestamp()
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp()
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 }
