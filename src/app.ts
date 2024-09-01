@@ -35,19 +35,19 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 
 const prisma = new PrismaClient();
 
-prisma.$use(async (params, next) => {
-  switch (params.action) {
-    case "findMany":
-      // find 할 때 9시간 빼서 한국 표준시로 select
-      const newFinds = params.args.data.map((el: any) => {
-        el.createdAt = addHours(el.createdAt, -9);
-      });
+// prisma.$use(async (params, next) => {
+//   switch (params.action) {
+//     case "findMany":
+//       // find 할 때 9시간 빼서 한국 표준시로 select
+//       const newFinds = params.args.data.map((el: any) => {
+//         el.createdAt = addHours(el.createdAt, -9);
+//       });
 
-      params.args.data = newFinds;
-      break;
-  }
-  return next(params);
-});
+//       params.args.data = newFinds;
+//       break;
+//   }
+//   return next(params);
+// });
 
 const corsOptions = {
   origin: ["http://localhost:3000"],
@@ -393,14 +393,14 @@ app.get(
       total += parseInt(spentMoney);
     });
 
-    const formatTargetDateSpendingMoney = targetDateSpendingMoney.map(
-      (data) => ({
-        ...data,
-        date: addHours(data.date, 9),
-      })
-    );
+    // const formatTargetDateSpendingMoney = targetDateSpendingMoney.map(
+    //   (data) => ({
+    //     ...data,
+    //     date: addHours(data.date, 9),
+    //   })
+    // );
 
-    res.send({ targetMonthSpending, formatTargetDateSpendingMoney, total });
+    res.send({ targetMonthSpending, targetDateSpendingMoney, total });
   })
 );
 
@@ -431,14 +431,14 @@ app.patch(
     const { id } = req.body;
     // console.log(req.body);
 
-    const formatData = {
-      ...req.body,
-      date: addHours(req.body.date, 9),
-    };
+    // const formatData = {
+    //   ...req.body,
+    //   date: addHours(req.body.date, 9),
+    // };
 
     const product = await prisma.spendingMoney.update({
       where: { id: parseInt(id) },
-      data: formatData,
+      data: req.body,
     });
     res.send(product);
   })
