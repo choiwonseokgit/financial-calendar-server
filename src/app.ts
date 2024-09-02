@@ -6,26 +6,19 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { toZonedTime, fromZonedTime, getTimezoneOffset } from "date-fns-tz";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 
 const timeZone = "Asia/Seoul";
-// const timeZone = "America/New_York";
 // const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-console.log(timeZone);
 
 const prisma = new PrismaClient().$extends({
   query: {
     $allModels: {
       async $allOperations({ args, query }) {
-        // await prisma.$executeRaw`SET TIME ZONE 'Asia/Seoul'`;
-        //console.log(args);
-        // return query(args);
-
         const convertDatesToUtc = (args: any) => {
           if (!args.data) return args;
 
           const { data } = args;
-          // console.log("hi");
 
           Object.keys(data).forEach((key) => {
             if (data[key] instanceof Date) {
@@ -58,13 +51,9 @@ const prisma = new PrismaClient().$extends({
           convertDatesToUtc(args);
         }
 
-        // console.log("changed", args);
-
         const result = await query(args);
 
         if (result) convertDatesFromUtc(result);
-        //console.log("result", result);
-        // console.log(fromZonedTime(new Date(), timeZone));
 
         return result;
       },
@@ -86,10 +75,10 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    // 토큰을 디코딩하여 payload를 얻습니다.
+    // 토큰을 디코딩
     const decoded: any = jwt.verify(accessToken, process.env.JWT_SECRET!);
     req.userId = decoded.id;
-    // payload에서 userId를 추출합니다.
+    // payload에서 userId를 추출
 
     next();
   } catch (error) {
@@ -152,8 +141,7 @@ app.get(
           grant_type: "authorization_code",
           client_id: process.env.KAKAO_LOGIN_CLIENT_ID,
           code,
-          redirect_uri: `https://financial-calendar-server.onrender.com/oauth/kakao`,
-          // redirect_uri: `http://localhost:4000/oauth/kakao`,
+          redirect_uri: `${process.env.SERVER}/oauth/kakao`,
         },
       }
     );
@@ -196,21 +184,19 @@ app.get(
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
-    res.redirect(`http://localhost:3000/auth?userId=${user.id}`);
+    res.redirect(`${process.env.CLIENT}/auth?userId=${user.id}`);
   })
 );
 
 app.get(
   "/oauth/kakao/logout",
   asyncHandler(async (req, res) => {
-    // console.log("소셜 로그인 로그아웃");
-
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
 
-    res.redirect(`http://localhost:3000/auth?userId=${null}`);
+    res.redirect(`${process.env.CLIENT}/auth?userId=${null}`);
   })
 );
 
@@ -393,13 +379,11 @@ app.delete(
 
 /*********** spending-moneys ***********/
 
-//TODO: query string으로 각 달의 데이터를 요청할 수 있게끔
 app.get(
   "/spending-moneys",
   authenticateToken,
   asyncHandler(async (req, res) => {
     const { userId } = req;
-    // const { userId } = req.params;
     const { month, year } = req.query;
 
     const targetMonthSpending = await prisma.targetMonthSpending.findUnique({
@@ -443,13 +427,6 @@ app.get(
       total += parseInt(spentMoney);
     });
 
-    // const formatTargetDateSpendingMoney = targetDateSpendingMoney.map(
-    //   (data) => ({
-    //     ...data,
-    //     date: addHours(data.date, 9),
-    //   })
-    // );
-
     res.send({ targetMonthSpending, targetDateSpendingMoney, total });
   })
 );
@@ -459,8 +436,6 @@ app.post(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const { userId } = req;
-
-    // console.log(req.body);
 
     const newData = {
       ...req.body,
@@ -480,12 +455,6 @@ app.patch(
   authenticateToken,
   asyncHandler(async (req, res) => {
     const { id } = req.body;
-    // console.log(req.body);
-
-    // const formatData = {
-    //   ...req.body,
-    //   date: addHours(req.body.date, 9),
-    // };
 
     const product = await prisma.spendingMoney.update({
       where: { id: parseInt(id) },
@@ -545,8 +514,6 @@ app.post(
   "/schedules",
   authenticateToken,
   asyncHandler(async (req, res) => {
-    // console.log(req.body);
-
     const { userId } = req;
 
     const newData = {
