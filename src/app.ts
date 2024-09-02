@@ -410,14 +410,14 @@ app.post(
   asyncHandler(async (req, res) => {
     const { userId } = req;
 
-    // const newData = {
-    //   ...req.body,
-    //   date: subHours(req.body.date, 9),
-    //   userId,
-    // };
+    const newData = {
+      ...req.body,
+      // date: subHours(req.body.date, 9),
+      userId,
+    };
 
     const spendingMoney = await prisma.spendingMoney.create({
-      data: req.body,
+      data: newData,
     });
 
     res.status(201).send(spendingMoney);
