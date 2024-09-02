@@ -69,6 +69,7 @@ const generateToken = (userId: number) => {
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.cookies.accessToken; // 쿠키에서 토큰 가져오기
+  console.log(req.cookies);
 
   if (!accessToken) {
     console.log("토큰 없음!");
@@ -184,6 +185,7 @@ app.get(
       secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서는 HTTPS 사용
       maxAge: 1 * 24 * 60 * 60 * 1000, // 쿠키 유효기간 (7일)
       sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      domain: process.env.CLIENT,
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
