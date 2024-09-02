@@ -171,7 +171,9 @@ app.get(
         data: {
           kakaoId: kakaoId.toString(),
           nickname: authInfo.data.properties.nickname,
-          profileImage: authInfo.data.properties.profile_image,
+          profileImage: (
+            authInfo.data.properties.profile_image as string
+          ).replace("http://", "https://"),
         },
       });
     }
@@ -189,9 +191,9 @@ app.get(
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
-    console.log("res.cookie", res.cookie);
-
-    res.redirect(`${process.env.CLIENT}/auth?userId=${user.id}`);
+    res.redirect(
+      `${process.env.CLIENT}/auth?userId=${user.id}&accessToken=${accessToken}`
+    );
   })
 );
 
