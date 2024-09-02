@@ -6,7 +6,70 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { addHours, subHours } from "date-fns";
+import { addHours, parse, parseISO, subHours } from "date-fns";
+import { toZonedTime, fromZonedTime, getTimezoneOffset } from "date-fns-tz";
+
+// const timeZone = "UTC";
+// const timeZone = "America/New_York";
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+console.log(timeZone);
+
+const prisma = new PrismaClient().$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ args, query }) {
+        // await prisma.$executeRaw`SET TIME ZONE 'Asia/Seoul'`;
+        //console.log(args);
+        // return query(args);
+
+        const convertDatesToUtc = (args: any) => {
+          if (!args.data) return args;
+
+          const { data } = args;
+          // console.log("hi");
+
+          Object.keys(data).forEach((key) => {
+            if (data[key] instanceof Date) {
+              data[key] = toZonedTime(data[key], timeZone);
+            } else if (typeof data[key] === "object" && data[key] !== null) {
+              convertDatesToUtc(data[key]);
+            }
+          });
+        };
+
+        const convertDatesFromUtc = (data: any) => {
+          if (Array.isArray(data)) {
+            data.forEach((item) => {
+              convertDatesFromUtc(item);
+            });
+          } else {
+            Object.keys(data).forEach((key) => {
+              if (data[key] instanceof Date) {
+                data[key] = fromZonedTime(data[key], timeZone);
+              } else if (typeof data[key] === "object" && data[key] !== null) {
+                convertDatesFromUtc(data[key]);
+              }
+            });
+          }
+        };
+
+        if (args) {
+          convertDatesToUtc(args);
+        }
+
+        // console.log("changed", args);
+
+        const result = await query(args);
+
+        convertDatesFromUtc(result);
+        //console.log("result", result);
+        // console.log(fromZonedTime(new Date(), timeZone));
+
+        return result;
+      },
+    },
+  },
+});
 
 const generateToken = (userId: number) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
@@ -32,22 +95,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     return res.status(403).json({ message: "Invalid token" });
   }
 };
-
-const prisma = new PrismaClient();
-
-// prisma.$use(async (params, next) => {
-//   switch (params.action) {
-//     case "findMany":
-//       // find 할 때 9시간 빼서 한국 표준시로 select
-//       const newFinds = params.args.data.map((el: any) => {
-//         el.createdAt = addHours(el.createdAt, -9);
-//       });
-
-//       params.args.data = newFinds;
-//       break;
-//   }
-//   return next(params);
-// });
 
 const corsOptions = {
   origin: ["http://localhost:3000"],
@@ -104,7 +151,8 @@ app.get(
           grant_type: "authorization_code",
           client_id: process.env.KAKAO_LOGIN_CLIENT_ID,
           code,
-          redirect_uri: `https://financial-calendar-server.onrender.com/oauth/kakao`,
+          // redirect_uri: `https://financial-calendar-server.onrender.com/oauth/kakao`,
+          redirect_uri: `http://localhost:4000/oauth/kakao`,
         },
       }
     );
@@ -143,7 +191,8 @@ app.get(
       httpOnly: true, // 클라이언트 자바스크립트에서 쿠키 접근 불가 (보안 강화)
       secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서는 HTTPS 사용
       maxAge: 1 * 24 * 60 * 60 * 1000, // 쿠키 유효기간 (7일)
-      sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      // sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
     res.redirect(`http://localhost:3000/auth?userId=${user.id}`);
@@ -410,9 +459,11 @@ app.post(
   asyncHandler(async (req, res) => {
     const { userId } = req;
 
+    // console.log(req.body);
+
     const newData = {
       ...req.body,
-      // date: subHours(req.body.date, 9),
+      date: addHours(parseISO(req.body.date), 9),
       userId,
     };
 

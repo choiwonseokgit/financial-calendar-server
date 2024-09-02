@@ -20,7 +20,7 @@ model User {
   profileImage         String?
   kakaoId              String                @unique
   createdAt            DateTime              @default(now()) @db.Timestamp()
-  updatedAt            DateTime              @default(now()) @updatedAt @db.Timestamp()
+  updatedAt            DateTime              @updatedAt @db.Timestamp()
   spendingMoneys       SpendingMoney[]
   schedules            Schedule[]
   targetmonthSpendings TargetMonthSpending[]
@@ -33,7 +33,7 @@ model SpendingMoney {
   date       DateTime
   memo       String?
   createdAt  DateTime @default(now()) @db.Timestamp()
-  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp()
+  updatedAt  DateTime @updatedAt @db.Timestamp()
   User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
 }
