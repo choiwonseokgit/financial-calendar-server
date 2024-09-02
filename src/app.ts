@@ -184,7 +184,7 @@ app.get(
       httpOnly: true, // 클라이언트 자바스크립트에서 쿠키 접근 불가 (보안 강화)
       secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서는 HTTPS 사용
       maxAge: 1 * 24 * 60 * 60 * 1000, // 쿠키 유효기간 (7일)
-      sameSite: "lax", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
       // domain: process.env.CLIENT,
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
