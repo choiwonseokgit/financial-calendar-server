@@ -151,8 +151,8 @@ app.get(
           grant_type: "authorization_code",
           client_id: process.env.KAKAO_LOGIN_CLIENT_ID,
           code,
-          // redirect_uri: `https://financial-calendar-server.onrender.com/oauth/kakao`,
-          redirect_uri: `http://localhost:4000/oauth/kakao`,
+          redirect_uri: `https://financial-calendar-server.onrender.com/oauth/kakao`,
+          // redirect_uri: `http://localhost:4000/oauth/kakao`,
         },
       }
     );
@@ -191,8 +191,8 @@ app.get(
       httpOnly: true, // 클라이언트 자바스크립트에서 쿠키 접근 불가 (보안 강화)
       secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서는 HTTPS 사용
       maxAge: 1 * 24 * 60 * 60 * 1000, // 쿠키 유효기간 (7일)
-      // sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
-      sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
     res.redirect(`http://localhost:3000/auth?userId=${user.id}`);
