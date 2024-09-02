@@ -61,7 +61,7 @@ const prisma = new PrismaClient().$extends({
 
         const result = await query(args);
 
-        convertDatesFromUtc(result);
+        if (result) convertDatesFromUtc(result);
         //console.log("result", result);
         // console.log(fromZonedTime(new Date(), timeZone));
 
