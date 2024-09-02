@@ -146,6 +146,8 @@ app.get(
       }
     );
 
+    console.log(authToken);
+
     // console.log("authToken", authToken);
     const authInfo = await axios.post(
       "https://kapi.kakao.com/v2/user/me",
