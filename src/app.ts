@@ -6,7 +6,6 @@ import cors from "cors";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { addHours, parse, parseISO, subHours } from "date-fns";
 import { toZonedTime, fromZonedTime, getTimezoneOffset } from "date-fns-tz";
 
 const timeZone = "Asia/Seoul";
@@ -32,6 +31,7 @@ const prisma = new PrismaClient().$extends({
             if (data[key] instanceof Date) {
               data[key] = fromZonedTime(data[key], timeZone);
             } else if (typeof data[key] === "object" && data[key] !== null) {
+              //내부가 객체인 경우
               convertDatesToUtc(data[key]);
             }
           });
@@ -47,6 +47,7 @@ const prisma = new PrismaClient().$extends({
               if (data[key] instanceof Date) {
                 data[key] = toZonedTime(data[key], timeZone);
               } else if (typeof data[key] === "object" && data[key] !== null) {
+                //내부가 객체인 경우
                 convertDatesFromUtc(data[key]);
               }
             });
@@ -463,7 +464,6 @@ app.post(
 
     const newData = {
       ...req.body,
-      date: addHours(parseISO(req.body.date), 9),
       userId,
     };
 
