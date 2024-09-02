@@ -146,8 +146,6 @@ app.get(
       }
     );
 
-    console.log(authToken);
-
     // console.log("authToken", authToken);
     const authInfo = await axios.post(
       "https://kapi.kakao.com/v2/user/me",
@@ -177,6 +175,8 @@ app.get(
     }
 
     const accessToken = generateToken(user.id);
+
+    console.log(accessToken);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true, // 클라이언트 자바스크립트에서 쿠키 접근 불가 (보안 강화)
