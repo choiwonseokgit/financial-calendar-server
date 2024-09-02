@@ -69,6 +69,7 @@ const generateToken = (userId: number) => {
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.cookies.accessToken; // 쿠키에서 토큰 가져오기
+  console.log(req);
   console.log(req.cookies);
 
   if (!accessToken) {
@@ -94,8 +95,8 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.json());
 app.use(cookieParser());
 
 type Handler = (
