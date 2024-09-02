@@ -56,7 +56,7 @@ model TargetMonthSpending {
   id          Int    @id @default(autoincrement())
   targetDate  String
   targetMoney String
-  User        User   @relation(fields: [userId], references: [id])
+  User        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
 
   @@unique([userId, targetDate])
