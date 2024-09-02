@@ -189,7 +189,7 @@ app.get(
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
-    console.log(`Redirecting to: ${process.env.CLIENT}/auth?userId=${user.id}`);
+    console.log("res.cookie", res.cookie);
 
     res.redirect(`${process.env.CLIENT}/auth?userId=${user.id}`);
   })
