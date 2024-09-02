@@ -87,7 +87,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const corsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: [`${process.env.CLIENT}`],
   credentials: true,
 };
 
