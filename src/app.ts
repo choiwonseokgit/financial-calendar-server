@@ -9,9 +9,9 @@ import cookieParser from "cookie-parser";
 import { addHours, parse, parseISO, subHours } from "date-fns";
 import { toZonedTime, fromZonedTime, getTimezoneOffset } from "date-fns-tz";
 
-// const timeZone = "UTC";
+const timeZone = "Asia/Seoul";
 // const timeZone = "America/New_York";
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+// const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 console.log(timeZone);
 
 const prisma = new PrismaClient().$extends({
@@ -30,7 +30,7 @@ const prisma = new PrismaClient().$extends({
 
           Object.keys(data).forEach((key) => {
             if (data[key] instanceof Date) {
-              data[key] = toZonedTime(data[key], timeZone);
+              data[key] = fromZonedTime(data[key], timeZone);
             } else if (typeof data[key] === "object" && data[key] !== null) {
               convertDatesToUtc(data[key]);
             }
@@ -45,7 +45,7 @@ const prisma = new PrismaClient().$extends({
           } else {
             Object.keys(data).forEach((key) => {
               if (data[key] instanceof Date) {
-                data[key] = fromZonedTime(data[key], timeZone);
+                data[key] = toZonedTime(data[key], timeZone);
               } else if (typeof data[key] === "object" && data[key] !== null) {
                 convertDatesFromUtc(data[key]);
               }
