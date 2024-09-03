@@ -92,8 +92,6 @@ const corsOptions = {
   credentials: true,
 };
 
-console.log(CLIENT_URL);
-
 const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -149,7 +147,6 @@ app.get(
       }
     );
 
-    // console.log("authToken", authToken);
     const authInfo = await axios.post(
       "https://kapi.kakao.com/v2/user/me",
       {},
