@@ -7,9 +7,9 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
+import { CLIENT_URL, SERVER_URL } from "./constants";
 
 const timeZone = "Asia/Seoul";
-// const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const prisma = new PrismaClient().$extends({
   query: {
@@ -69,7 +69,6 @@ const generateToken = (userId: number) => {
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.cookies.accessToken; // 쿠키에서 토큰 가져오기
-  console.log(req.cookies);
 
   if (!accessToken) {
     console.log("토큰 없음!");
@@ -89,9 +88,11 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const corsOptions = {
-  origin: [`${process.env.CLIENT}`],
+  origin: [`${CLIENT_URL}`],
   credentials: true,
 };
+
+console.log(CLIENT_URL);
 
 const app = express();
 app.use(cors(corsOptions));
@@ -143,7 +144,7 @@ app.get(
           grant_type: "authorization_code",
           client_id: process.env.KAKAO_LOGIN_CLIENT_ID,
           code,
-          redirect_uri: `${process.env.SERVER}/oauth/kakao`,
+          redirect_uri: `${SERVER_URL}/oauth/kakao`,
         },
       }
     );
@@ -180,19 +181,17 @@ app.get(
 
     const accessToken = generateToken(user.id);
 
-    console.log(accessToken);
-
     res.cookie("accessToken", accessToken, {
       httpOnly: true, // 클라이언트 자바스크립트에서 쿠키 접근 불가 (보안 강화)
       secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서는 HTTPS 사용
       maxAge: 1 * 24 * 60 * 60 * 1000, // 쿠키 유효기간 (7일)
-      sameSite: "none", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
+      sameSite: "lax", // 모바일 브라우저는 sameSite='lax' 옵션 추가 설정 지원 안되는게 대부분..
       // domain: process.env.CLIENT,
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
     res.redirect(
-      `${process.env.CLIENT}/auth?userId=${user.id}&accessToken=${accessToken}`
+      `${CLIENT_URL}/auth?userId=${user.id}&accessToken=${accessToken}`
     );
   })
 );
@@ -205,7 +204,7 @@ app.get(
       secure: process.env.NODE_ENV === "production",
     });
 
-    res.redirect(`${process.env.CLIENT}/auth?userId=${null}`);
+    res.redirect(`${CLIENT_URL}/auth?userId=${null}`);
   })
 );
 
@@ -220,7 +219,6 @@ app.get(
       where: { id: userId },
     });
 
-    // console.log(userData);
     res.send(userData);
   })
 );
