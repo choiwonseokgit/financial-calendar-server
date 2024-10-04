@@ -15,7 +15,6 @@ export const authenticateToken = (
   const accessToken = req.cookies.accessToken; // 쿠키에서 토큰 가져오기
 
   if (!accessToken) {
-    console.log("토큰 없음!");
     return res.status(401).json({ message: "No token provided" });
   }
 

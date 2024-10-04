@@ -11,8 +11,6 @@ holidaysRouter.route("/holidays").get(
   asyncHandler(async (req, res) => {
     const { month, year } = req.query;
 
-    console.log(month, year);
-
     const {
       data: {
         response: { body },

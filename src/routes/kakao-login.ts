@@ -68,9 +68,7 @@ kakaoLoginRouter.get(
       //sameSite: "strict", // 동일 사이트 정책 //TODO 프론트 배포하고 sameSite 설정하기
     });
 
-    res.redirect(
-      `${CLIENT_URL}/auth?userId=${user.id}&accessToken=${accessToken}`
-    );
+    res.redirect(`${CLIENT_URL}/auth?userId=${user.id}`);
   })
 );
 
