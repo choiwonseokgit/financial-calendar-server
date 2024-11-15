@@ -7,6 +7,68 @@ const spendingMoneysRouter = express.Router();
 
 spendingMoneysRouter.use(authenticateToken);
 
+spendingMoneysRouter.get(
+  "/spending-moneys/chart",
+  asyncHandler(async (req, res) => {
+    const { userId } = req;
+    const { month, year } = req.query;
+
+    const spendingMoneys = await prisma.spendingMoney.findMany({
+      where: { userId },
+    });
+
+    const targetDateSpendingMoney = spendingMoneys.filter((spendingMoney) => {
+      if (month === "null" && year) {
+        //연도별 데이터
+        const { date } = spendingMoney;
+
+        const dateYear = date.getFullYear();
+
+        return parseInt(year as string) === dateYear;
+      }
+
+      if (month && year) {
+        //월별 데이터
+        const { date } = spendingMoney;
+        const [dateYear, dateMonth] = [date.getFullYear(), date.getMonth() + 1];
+
+        return (
+          parseInt(year as string) === dateYear &&
+          parseInt(month as string) === dateMonth
+        );
+      }
+
+      return true;
+    });
+
+    const totalForCategory = new Map();
+
+    targetDateSpendingMoney.forEach((spendingMoney) =>
+      totalForCategory.set(
+        spendingMoney.category,
+        (totalForCategory.get(spendingMoney.category) || 0) +
+          parseInt(spendingMoney.spentMoney)
+      )
+    );
+
+    const total = targetDateSpendingMoney.reduce(
+      (acc, el) => acc + parseInt(el.spentMoney),
+      0
+    );
+
+    const spendingMoneysForChart = [...totalForCategory].map((el) => [
+      ...el,
+      targetDateSpendingMoney
+        .filter((spendingMoney) => spendingMoney.category === el[0])
+        .sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        ),
+    ]);
+
+    res.send({ spendingMoneysForChart, total });
+  })
+);
+
 spendingMoneysRouter
   .route("/spending-moneys")
   .get(
@@ -45,8 +107,7 @@ spendingMoneysRouter
           return true;
         })
         .sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         );
 
       let total = 0;
