@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
-export const generateToken = (userId: number) => {
+export const generateToken = (userId: number, type: "access" | "refresh") => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
+    expiresIn: type === "access" ? "15m" : "7d",
   });
 };
 

@@ -15,7 +15,9 @@ usersRouter.get(
       where: { id: userId },
     });
 
-    res.send(userData);
+    const { id, nickname, profileImage } = userData!;
+
+    res.send({ id, nickname, profileImage });
   })
 );
 
